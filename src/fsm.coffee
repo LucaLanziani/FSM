@@ -55,7 +55,7 @@ class FSM.Machine
         else if @_defaultTransition
             return this._defaultTransition
 
-        throw new Error("Transition is undefined: (#{action}, #{state})")
+        # throw new Error("Transition is undefined: (#{action}, #{state})")
 
     getCurrentState: () ->
         # Return the current state of the machine
@@ -77,10 +77,11 @@ class FSM.Machine
         # Process an action
 
         result = @getTransition(action, @_currentState)
-
+        if ! result
+            return;
         # Call any associated callback
-        if result[1]
-            result[1].call(@context or= @, action)
+        if result[1] && (result[1].call(@context or= @, action) == false)
+            return false;
 
         # Transition to the next state
         @_currentState = result[0]

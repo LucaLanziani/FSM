@@ -52,7 +52,6 @@
       } else if (this._defaultTransition) {
         return this._defaultTransition;
       }
-      throw new Error("Transition is undefined: (" + action + ", " + state + ")");
     };
 
     Machine.prototype.getCurrentState = function() {
@@ -73,8 +72,11 @@
     Machine.prototype.process = function(action) {
       var result;
       result = this.getTransition(action, this._currentState);
-      if (result[1]) {
-        result[1].call(this.context || (this.context = this), action);
+      if (!result) {
+        return;
+      }
+      if (result[1] && (result[1].call(this.context || (this.context = this), action) === false)) {
+        return false;
       }
       return this._currentState = result[0];
     };
