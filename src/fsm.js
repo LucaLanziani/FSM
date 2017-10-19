@@ -13,14 +13,14 @@
       this._currentState = null;
     }
 
-    Machine.prototype.addTransition = function(action, state, nextState, callback) {
+    Machine.prototype.addTransition = function(action, state, nextState, onEnter, onState) {
       if (!nextState) {
         nextState = state;
       }
-      return this._stateTransitions[[action, state]] = [nextState, callback];
+      return this._stateTransitions[[action, state]] = [nextState, onEnter, onState];
     };
 
-    Machine.prototype.addTransitions = function(actions, state, nextState, callback) {
+    Machine.prototype.addTransitions = function(actions, state, nextState, onEnter, onState) {
       var action, _i, _len, _results;
       if (!nextState) {
         nextState = state;
@@ -28,20 +28,20 @@
       _results = [];
       for (_i = 0, _len = actions.length; _i < _len; _i++) {
         action = actions[_i];
-        _results.push(this.addTransition(action, state, nextState, callback));
+        _results.push(this.addTransition(action, state, nextState, onEnter, onState));
       }
       return _results;
     };
 
-    Machine.prototype.addTransitionAny = function(state, nextState, callback) {
+    Machine.prototype.addTransitionAny = function(state, nextState, onEnter, onState) {
       if (!nextState) {
         nextState = state;
       }
-      return this._stateTransitionsAny[state] = [nextState, callback];
+      return this._stateTransitionsAny[state] = [nextState, onEnter, onState];
     };
 
-    Machine.prototype.setDefaultTransition = function(state, callback) {
-      return this._defaultTransition = [state, callback];
+    Machine.prototype.setDefaultTransition = function(state, onEnter, onState) {
+      return this._defaultTransition = [state, onEnter, onState];
     };
 
     Machine.prototype.getTransition = function(action, state) {
@@ -69,16 +69,19 @@
       return this._currentState = this._initialState;
     };
 
-    Machine.prototype.process = function(action) {
+    Machine.prototype.process = function(action, options) {
       var result;
       result = this.getTransition(action, this._currentState);
       if (!result) {
         return;
       }
-      if (result[1] && (result[1].call(this.context || (this.context = this), action) === false)) {
+      if (result[1] && (result[1].call(this.context || (this.context = this), action, options) === false)) {
         return false;
       }
-      return this._currentState = result[0];
+      this._currentState = result[0];
+      if (result[2]) {
+        return result[2].call(this.context || (this.context = this), action, options);
+      }
     };
 
     return Machine;

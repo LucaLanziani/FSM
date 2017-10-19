@@ -1,7 +1,7 @@
 {
   "name": "FSM",
   "description": "A minimal finite state machine (FSM) for Javascript.",
-  "main": "build/fsm.js",
+  "main": "src/fsm.js",
   "authors": [
     {
       "name": "Anthony Blackshaw",

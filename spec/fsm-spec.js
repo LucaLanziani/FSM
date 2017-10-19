@@ -26,10 +26,14 @@
       spyOn(sounds, 'growl');
       burt.addTransition('stroke', 'grumpy', 'content');
       burt.addTransition('feed', 'grumpy', 'content');
-      burt.addTransition('sing-to', 'content', 'sleeping', function() {
+      burt.addTransition('sing-to', 'content', 'sleeping', null, function() {
         return sounds.snore();
       });
       spyOn(sounds, 'snore');
+      burt.addTransition('bang on head', 'enraged', 'grumpy', function() {
+        this.reset();
+        return false;
+      });
       return burt.setInitialState('sleeping');
     });
     it('should growl when he wakes (as he will be grumpy)', function() {
@@ -55,10 +59,16 @@
       expect(burt.getCurrentState()).toBe('sleeping');
       return expect(sounds.snore).toHaveBeenCalled();
     });
-    return it('should go back to sleep when reset (even if enraged)', function() {
+    it('should go back to sleep when reset (even if enraged)', function() {
       burt.process('call');
       burt.process('prod');
       burt.reset();
+      return expect(burt.getCurrentState()).toBe('sleeping');
+    });
+    return it('should go back to sleep with a bang on head (even if enraged)', function() {
+      burt.process('call');
+      burt.process('prod');
+      burt.process('bang on head');
       return expect(burt.getCurrentState()).toBe('sleeping');
     });
   });
