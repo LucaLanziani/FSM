@@ -72,16 +72,16 @@
     Machine.prototype.process = function(action, options) {
       var result;
       result = this.getTransition(action, this._currentState);
-      if (!result) {
-        return;
+      if (result) {
+        if (result[1] && (result[1].call(this.context || (this.context = this), action, options) === false)) {
+          return this;
+        }
+        this._currentState = result[0];
+        if (result[2]) {
+          result[2].call(this.context || (this.context = this), action, options);
+        }
       }
-      if (result[1] && (result[1].call(this.context || (this.context = this), action, options) === false)) {
-        return false;
-      }
-      this._currentState = result[0];
-      if (result[2]) {
-        return result[2].call(this.context || (this.context = this), action, options);
-      }
+      return this;
     };
 
     return Machine;
