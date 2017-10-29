@@ -1,7 +1,7 @@
 {
   "name": "f-s-m",
   "description": "A minimal finite state machine (F-S-M) for Javascript.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": [
     "fsm",
     "state",
